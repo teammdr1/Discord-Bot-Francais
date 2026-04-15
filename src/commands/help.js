@@ -73,6 +73,24 @@ module.exports = {
         { name: `${prefix}ticket setcolor #hex`, description: 'Modifie la couleur du panneau.' },
         { name: `${prefix}ticket config`, description: 'Affiche la configuration des tickets.' },
       ],
+      '📋・Logs': [
+        { name: `${prefix}logs`, description: 'Panneau interactif de configuration des salons de logs.' },
+        { name: `${prefix}logs set <type> #salon`, description: 'Définit un salon pour un type de log (member, messages, voice, roles, boost, channels, moderation).' },
+        { name: `${prefix}logs clear <type>`, description: 'Désactive un type de log.' },
+        { name: `${prefix}logs clearall`, description: 'Supprime tous les salons de logs configurés.' },
+      ],
+      '🔒・Permissions': [
+        { name: `${prefix}perms role @Role`, description: 'Modifier les permissions d\'un rôle (menu interactif).' },
+        { name: `${prefix}perms channel #salon @Role`, description: 'Modifier les overrides de permission d\'un salon (menu interactif).' },
+        { name: `${prefix}perms reset #salon`, description: 'Réinitialise toutes les permissions d\'un salon.' },
+        { name: `${prefix}perms sync #salon`, description: 'Synchronise un salon avec sa catégorie parente.' },
+      ],
+      '👑・Owners Bot': [
+        { name: `${prefix}owner`, description: 'Lister les owners du bot sur ce serveur.' },
+        { name: `${prefix}owner add @user`, description: 'Ajouter un owner (accès total aux commandes du bot).' },
+        { name: `${prefix}owner remove @user`, description: 'Retirer un owner.' },
+        { name: `${prefix}owner clear`, description: 'Supprimer tous les owners (admin uniquement).' },
+      ],
       '🛡️・Sécurité & Config': [
         { name: `${prefix}setup`, description: 'Configure le bot pour ce serveur (assistant interactif).' },
         { name: `${prefix}setprefix <préfixe>`, description: 'Change le préfixe du bot.' },
@@ -106,6 +124,16 @@ module.exports = {
         { name: `${prefix}tic-tac-toe`, description: 'Joue au morpion.' },
         { name: `${prefix}fight`, description: 'Lance un mini-jeu de combat.' },
         { name: `${prefix}dissection`, description: 'Mini-jeu de dissection.' },
+      ],
+      '🎉・Giveaways': [
+        { name: `${prefix}gw-create`, description: 'Crée un giveaway (wizard interactif).' },
+        { name: `${prefix}gw-create <durée> <gagnants> <prix>`, description: 'Crée un giveaway en une ligne. Ex: `+gw-create 1h 1 iPhone 15`' },
+        { name: `${prefix}gw-end [ID]`, description: 'Termine un giveaway immédiatement.' },
+        { name: `${prefix}gw-reroll [ID]`, description: 'Reroll les gagnants d\'un giveaway terminé.' },
+        { name: `${prefix}gw-list`, description: 'Liste les giveaways actifs et récents.' },
+        { name: `${prefix}gw-delete <ID>`, description: 'Supprime définitivement un giveaway.' },
+        { name: `${prefix}gw-config`, description: 'Configure les paramètres par défaut (couleur, salon, gagnants, rôles).' },
+        { name: `${prefix}gw-panel`, description: 'Panneau de gestion des giveaways avec menus interactifs.' },
       ],
       '🎗️・Divertissement': [
         { name: `${prefix}8ball <question>`, description: 'Pose une question, reçois une réponse aléatoire.' },
