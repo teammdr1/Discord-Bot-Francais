@@ -1,0 +1,39 @@
+{
+  "prefix": "+",
+  "welcomeChannelId": null,
+  "logChannelId": null,
+  "soutienRoleId": "1492823837606154330",
+  "soutienStatut": "/lasko",
+  "captchaEnabled": false,
+  "antiraidEnabled": true,
+  "muteRoleId": null,
+  "warnRoles": [],
+  "backupLink": null,
+  "serverDescription": "du respect sur serveur de lasko",
+  "antiraidConfig": {
+    "spamLimit": 5,
+    "spamInterval": 2000,
+    "muteDuration": 5,
+    "joinLimit": 10,
+    "joinInterval": 10000,
+    "disableInvites": true
+  },
+  "ticketConfig": {
+    "panelDescription": "Cliquez sur le bouton ci-dessous pour créer un ticket. Notre équipe vous répondra dans les meilleurs délais.",
+    "panelColor": "#5865F2",
+    "logChannelId": "1492821464330801172",
+    "ticketCount": 2,
+    "categories": [
+      {
+        "id": "5a0e2520",
+        "name": "Staff",
+        "emoji": "🛡️",
+        "description": "Faire une candidature Staff",
+        "staffRoles": [
+          "1492805255967019150"
+        ],
+        "discordCategoryId": "1492820140939673754"
+      }
+    ]
+  }
+}

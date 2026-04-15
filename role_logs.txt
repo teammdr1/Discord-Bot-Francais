@@ -1,0 +1,106 @@
+[2026-04-12T07:48:14.383Z] Rejet non géré : DiscordjsError [TokenInvalid]: An invalid token was provided.
+[2026-04-12T07:50:04.497Z] Bot prêt (TheNetwork#0243)
+[2026-04-12T07:50:04.897Z] Bot prêt (TheNetwork#0243)
+[2026-04-12T07:50:34.472Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:34.472Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:39.473Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:39.478Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:44.474Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:44.475Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:49.484Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:49.557Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:54.475Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:54.479Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:59.479Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:50:59.496Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:04.487Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:04.496Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:09.495Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:09.499Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:14.492Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:14.500Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:19.507Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:19.551Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:24.508Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:24.515Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:29.509Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:29.513Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:34.514Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:34.519Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:39.525Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:39.529Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:44.541Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:44.551Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:49.545Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:49.552Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:54.565Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:54.583Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:59.566Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:51:59.618Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:04.575Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:04.592Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:09.580Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:09.584Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:14.583Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:14.602Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:19.617Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:19.623Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:24.615Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:24.620Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:29.625Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:29.642Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:34.640Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:34.669Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:39.650Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:39.652Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:44.659Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:44.684Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:49.678Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:49.682Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:54.694Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:54.701Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:59.697Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:52:59.703Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:04.707Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:04.713Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:09.728Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:09.732Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:14.723Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:14.729Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:19.741Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:19.748Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:24.748Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:24.790Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:29.750Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:29.753Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:32.996Z] Bot prêt (TheNetwork#0243)
+[2026-04-12T07:53:34.762Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:39.781Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:44.783Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:49.773Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:54.773Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:53:59.793Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:04.855Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:09.812Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:14.793Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:19.796Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:24.804Z] Erreur pour Noob#8048: Cannot access 'hasStatus' before initialization
+[2026-04-12T07:54:46.435Z] Bot prêt (TheNetwork#0243)
+[2026-04-12T08:03:47.356Z] Bot prêt (TheNetwork#0243) — 1 serveur(s)
+[2026-04-12T08:25:44.421Z] Bot prêt (Shab#0243) — 1 serveur(s)
+[2026-04-12T08:26:21.030Z] Bot prêt (Shab#0243) — 2 serveur(s)
+[2026-04-12T08:34:46.184Z] Rejet non géré : GatewayRateLimitError: Request with opcode 8 was rate limited. Retry after 25.835 seconds.
+[2026-04-12T08:34:51.943Z] Rejet non géré : GatewayRateLimitError: Request with opcode 8 was rate limited. Retry after 20.079 seconds.
+[2026-04-12T08:34:56.377Z] Rejet non géré : GatewayRateLimitError: Request with opcode 8 was rate limited. Retry after 15.637 seconds.
+[2026-04-12T08:37:29.754Z] Bot prêt (Shab#0243) — 2 serveur(s)
+[2026-04-12T09:16:51.819Z] Bot prêt (Shab#0243) — 2 serveur(s)
+[2026-04-12T09:49:24.842Z] [Serveur de lasko] Rôle soutien ajouté à xbloxet
+[2026-04-12T09:49:37.136Z] [Serveur de lasko] Rôle soutien retiré à xbloxet
+[2026-04-12T09:56:01.588Z] Bot prêt (Shab#0243) — 2 serveur(s)
+[2026-04-12T09:56:11.655Z] Erreur scan Serveur de lasko: Request with opcode 8 was rate limited. Retry after 19.355 seconds.
+[2026-04-12T10:07:29.119Z] Bot prêt (Shab#0243) — 2 serveur(s)
+[2026-04-12T10:07:39.208Z] Erreur scan Serveur de lasko: Request with opcode 8 was rate limited. Retry after 19.803 seconds.
+[2026-04-12T10:10:51.156Z] Bot prêt (Shab#0243) — 3 serveur(s)
+[2026-04-12T10:11:01.259Z] Erreur scan Serveur de lasko: Request with opcode 8 was rate limited. Retry after 19.757 seconds.
+[2026-04-12T10:16:33.589Z] Bot prêt (Shab#0243) — 3 serveur(s)
+[2026-04-12T10:16:43.642Z] Erreur scan Serveur de lasko: Request with opcode 8 was rate limited. Retry after 19.372 seconds.
