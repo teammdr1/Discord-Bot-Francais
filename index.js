@@ -9,6 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 const guildConfig = require("./src/utils/guildConfig");
+const snipe = require('./src/commands/snipe');
 
 const LOG_FILE = path.join(__dirname, "role_logs.txt");
 
@@ -25,7 +26,8 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates
   ],
   partials: [Partials.GuildMember]
 });
@@ -34,6 +36,8 @@ client.commands = new Collection();
 client.slashCommands = new Collection();
 client.prefix = config.prefix;
 client.config = config;
+
+snipe.init(client);
 
 require('./src/structure/commandHandler')(client);
 require('./src/structure/slashCommandHandler')(client);
