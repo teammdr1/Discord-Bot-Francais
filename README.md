@@ -150,38 +150,16 @@ Le bot sera en ligne et prêt à utiliser les commandes avec le préfixe `+`.
 ## 🗂 Structure du projet
 
 ```
-bot-discord-francais
-│
-├ data
-│ ├ warnings.json
-│
-├ src
-│ ├ commands
-│ │ ├ help.s
-│ │ ├ ping.js
-│ │ ├ warn.js
-│ │ └ etc...
-│ │
-│ ├ events
-│ │ ├ antiraid.js
-│ │ ├ captcha.js
-│ │ ├ guildMemberAdd.js
-│ │ ├ interactionButton.js
-│ │ ├ interactionCreate.js
-│ │ ├ messageCreate.js
-│ │ └ ready.js
-│ │
-│ ├ structure
-│ │ ├ commandHandler.js
-│ │ ├ eventHandler.js
-│ │ └ slashCommandHandler.js
-│ │
-│ ├ utils
-│ │ └ logger.js
-│
-├ config.js
-├ index.js
-└ package.json
+├── index.js              # Main entry point
+├── config.js             # Configuration (reads from env vars)
+├── version.js            # Version tracking
+├── data/                 # JSON data storage
+└── src/
+    ├── commands/         # Prefix commands (+help, +ban, etc.)
+    ├── events/           # Discord event listeners
+    ├── slashCommands/    # Slash commands
+    ├── structure/        # Command/event handlers
+    └── utils/            # Utility functions
 ```
 
 ---
