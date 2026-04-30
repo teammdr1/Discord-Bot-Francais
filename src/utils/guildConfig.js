@@ -13,6 +13,7 @@ function getDefault() {
   return {
     prefix: '+',
     welcomeChannelId: null,
+    welcomePingRoleId: null,
     logChannelId: null,
     soutienRoleId: null,
     soutienStatut: null,
@@ -22,13 +23,18 @@ function getDefault() {
     warnRoles: [],
     backupLink: null,
     serverDescription: null,
+    antiraidWhitelist: {
+      users: [],
+      roles: []
+    },
     antiraidConfig: {
       spamLimit: 5,
       spamInterval: 2000,
       muteDuration: 5,
       joinLimit: 10,
       joinInterval: 10000,
-      disableInvites: true
+      disableInvites: true,
+      raidRecovery: 10
     },
     ticketConfig: {
       panelDescription: 'Cliquez sur le bouton ci-dessous pour créer un ticket. Notre équipe vous répondra dans les meilleurs délais.',
@@ -50,6 +56,7 @@ function getAll(guildId) {
     return {
       ...defaults,
       ...saved,
+      antiraidWhitelist: { ...defaults.antiraidWhitelist, ...(saved.antiraidWhitelist || {}) },
       antiraidConfig: { ...defaults.antiraidConfig, ...(saved.antiraidConfig || {}) },
       ticketConfig: { ...defaults.ticketConfig, ...(saved.ticketConfig || {}), categories: (saved.ticketConfig?.categories || []) }
     };
