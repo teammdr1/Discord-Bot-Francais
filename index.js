@@ -13,7 +13,8 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 const guildConfig = require("./src/utils/guildConfig");
-const snipe = require("./src/commands/snipe");
+const snipe = require("./src/commands/other/snipe");
+const { Player } = require("discord-player");
 
 const LOG_FILE = path.join(__dirname, "role_logs.txt");
 
@@ -35,6 +36,7 @@ const client = new Client({
   partials: [Partials.GuildMember],
 });
 
+client.player = new Player(client);
 client.commands = new Collection();
 client.slashCommands = new Collection();
 client.prefix = config.prefix;
@@ -98,6 +100,10 @@ client.once("ready", async () => {
   });
 });
 
+client.player.events.on("playerStart", (queue, track) => {
+  queue.metadata.channel.send(`▶️ ${track.title}`);
+});
+
 client.on("presenceUpdate", async (_, newPresence) => {
   const member = newPresence?.member;
   if (!member || !member.guild) return;
@@ -151,22 +157,37 @@ client.on("guildMemberAdd", async (member) => {
       .setDisabled(true),
   );
   if (cfg.welcomeChannelId) {
-    const channel = member.guild.channels.cache.get(cfg.welcomeChannelId);
-    if (channel) {
-      channel
-        .send({
-          embeds: [welcomeEmbed],
-          components: [row],
-        })
-        .catch(() => {});
+  const channel = member.guild.channels.cache.get(cfg.welcomeChannelId);
+
+  if (channel) {
+    let content = "";
+
+    if (cfg.welcomePingRoleId) {
+      content = `<@&${cfg.welcomePingRoleId}>`;
     }
+
+    channel.send({
+      content: content,
+      embeds: [welcomeEmbed],
+      components: [row],
+      allowedMentions: {
+        roles: cfg.welcomePingRoleId ? [cfg.welcomePingRoleId] : []
+      }
+    }).catch(() => {});
   }
+}
   if (cfg.logChannelId) {
     const logChannel = member.guild.channels.cache.get(cfg.logChannelId);
     if (logChannel) {
       logChannel.send(`📥 ${member} a rejoint le serveur`).catch(() => {});
     }
   }
+  if (cfg.welcomeRoleId) {
+  const role = member.guild.roles.cache.get(cfg.welcomeRoleId);
+  if (role) {
+    member.roles.add(role).catch(() => {});
+  }
+}
 });
 
 client.on("guildMemberRemove", async (member) => {
@@ -234,7 +255,7 @@ process.stdin.on("data", async (data) => {
   if (!message) return;
 
   try {
-    const channel = await client.channels.fetch("1466007980569919636");
+    const channel = await client.channels.fetch("1485010294211219476");
     if (!channel) return logAction("Salon introuvable");
 
     await channel.send(message);
