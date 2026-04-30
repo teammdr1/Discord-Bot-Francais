@@ -5,6 +5,14 @@ const spamTracker = new Map();
 // Suivi des violations: guildId:userId → { count }
 const violations = new Map();
 
+function isWhitelisted(member, cfg) {
+    const whitelist = cfg.antiraidWhitelist || { users: [], roles: [] };
+    if (whitelist.users.includes(member.id)) return true;
+    if (member.roles.cache.some(role => whitelist.roles.includes(role.id))) return true;
+    if (member.permissions.has('Administrator')) return true;
+    return false;
+}
+
 async function sanctionMember(message, violationCount, cfg, arCfg) {
     const { guild, member, author, channel } = message;
     const logChannel = cfg.logChannelId ? guild.channels.cache.get(cfg.logChannelId) : null;
@@ -44,6 +52,7 @@ module.exports = {
 
         const cfg = guildConfig.getAll(message.guild.id);
         if (!cfg.antiraidEnabled) return;
+        if (isWhitelisted(message.member, cfg)) return;
 
         const arCfg = cfg.antiraidConfig || {};
         const spamLimit = arCfg.spamLimit || 5;
