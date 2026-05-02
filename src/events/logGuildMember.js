@@ -1,4 +1,11 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const {
+    AuditLogEvent,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+    SectionBuilder,
+    ThumbnailBuilder,
+} = require('discord.js');
 const { sendLog } = require('../utils/logHelper');
 
 module.exports = {
@@ -11,22 +18,44 @@ module.exports = {
         const wasBosting = !!oldMember.premiumSince;
         const isBoosting = !!newMember.premiumSince;
         if (!wasBosting && isBoosting) {
-            const embed = new EmbedBuilder()
-                .setTitle('🚀 Nouveau Boost !')
-                .setDescription(`${newMember} a commencé à **booster** le serveur ! 🎉`)
-                .setColor('#FF73FA')
-                .setThumbnail(newMember.user.displayAvatarURL({ dynamic: true }))
-                .addFields({ name: '🚀 Boosts total', value: `${guild.premiumSubscriptionCount || 0}`, inline: true })
-                .setTimestamp();
-            await sendLog(guild, 'boost', embed);
+            const container = new ContainerBuilder().setAccentColor(0xFF73FA);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent('## 🚀 Nouveau Boost !')
+            );
+            container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            const section = new SectionBuilder();
+            section.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `${newMember} a commencé à **booster** le serveur ! 🎉\n\n` +
+                    `**🚀 Boosts total :** ${guild.premiumSubscriptionCount || 0}`
+                )
+            );
+            section.setThumbnailAccessory(
+                new ThumbnailBuilder().setURL(newMember.user.displayAvatarURL({ dynamic: true }))
+            );
+            container.addSectionComponents(section);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
+            await sendLog(guild, 'boost', container);
         } else if (wasBosting && !isBoosting) {
-            const embed = new EmbedBuilder()
-                .setTitle('💔 Fin de Boost')
-                .setDescription(`${newMember} a **arrêté de booster** le serveur.`)
-                .setColor('#808080')
-                .setThumbnail(newMember.user.displayAvatarURL({ dynamic: true }))
-                .setTimestamp();
-            await sendLog(guild, 'boost', embed);
+            const container = new ContainerBuilder().setAccentColor(0x808080);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent('## 💔 Fin de Boost')
+            );
+            container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            const section = new SectionBuilder();
+            section.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`${newMember} a **arrêté de booster** le serveur.`)
+            );
+            section.setThumbnailAccessory(
+                new ThumbnailBuilder().setURL(newMember.user.displayAvatarURL({ dynamic: true }))
+            );
+            container.addSectionComponents(section);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
+            await sendLog(guild, 'boost', container);
         }
 
         // ── Rôles ──
@@ -37,7 +66,6 @@ module.exports = {
 
         if (added.size === 0 && removed.size === 0) return;
 
-        // Fetch audit log pour connaître l'auteur
         let executor = null;
         try {
             await new Promise(r => setTimeout(r, 600));
@@ -49,31 +77,51 @@ module.exports = {
         } catch {}
 
         if (added.size > 0) {
-            const embed = new EmbedBuilder()
-                .setTitle('🎖️ Rôle(s) Ajouté(s)')
-                .setColor('#57F287')
-                .setThumbnail(newMember.user.displayAvatarURL({ dynamic: true }))
-                .addFields(
-                    { name: '👤 Membre', value: `${newMember.user.tag} \`${newMember.id}\``, inline: true },
-                    { name: '➕ Rôle(s) ajouté(s)', value: added.map(r => `<@&${r.id}>`).join(', '), inline: true },
-                    { name: '🛠️ Par', value: executor ? `${executor.tag}` : 'Inconnu', inline: true }
+            const container = new ContainerBuilder().setAccentColor(0x57F287);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent('## 🎖️ Rôle(s) Ajouté(s)')
+            );
+            container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            const section = new SectionBuilder();
+            section.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `**👤 Membre :** ${newMember.user.tag} \`${newMember.id}\`\n` +
+                    `**➕ Rôle(s) ajouté(s) :** ${added.map(r => `<@&${r.id}>`).join(', ')}\n` +
+                    `**🛠️ Par :** ${executor ? executor.tag : 'Inconnu'}`
                 )
-                .setTimestamp();
-            await sendLog(guild, 'roles', embed);
+            );
+            section.setThumbnailAccessory(
+                new ThumbnailBuilder().setURL(newMember.user.displayAvatarURL({ dynamic: true }))
+            );
+            container.addSectionComponents(section);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
+            await sendLog(guild, 'roles', container);
         }
 
         if (removed.size > 0) {
-            const embed = new EmbedBuilder()
-                .setTitle('🎖️ Rôle(s) Retiré(s)')
-                .setColor('#ED4245')
-                .setThumbnail(newMember.user.displayAvatarURL({ dynamic: true }))
-                .addFields(
-                    { name: '👤 Membre', value: `${newMember.user.tag} \`${newMember.id}\``, inline: true },
-                    { name: '➖ Rôle(s) retiré(s)', value: removed.map(r => `<@&${r.id}>`).join(', '), inline: true },
-                    { name: '🛠️ Par', value: executor ? `${executor.tag}` : 'Inconnu', inline: true }
+            const container = new ContainerBuilder().setAccentColor(0xED4245);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent('## 🎖️ Rôle(s) Retiré(s)')
+            );
+            container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            const section = new SectionBuilder();
+            section.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `**👤 Membre :** ${newMember.user.tag} \`${newMember.id}\`\n` +
+                    `**➖ Rôle(s) retiré(s) :** ${removed.map(r => `<@&${r.id}>`).join(', ')}\n` +
+                    `**🛠️ Par :** ${executor ? executor.tag : 'Inconnu'}`
                 )
-                .setTimestamp();
-            await sendLog(guild, 'roles', embed);
+            );
+            section.setThumbnailAccessory(
+                new ThumbnailBuilder().setURL(newMember.user.displayAvatarURL({ dynamic: true }))
+            );
+            container.addSectionComponents(section);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
+            await sendLog(guild, 'roles', container);
         }
     }
 };
