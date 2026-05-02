@@ -1,4 +1,9 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const {
+    AuditLogEvent,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+} = require('discord.js');
 const { sendLog } = require('../utils/logHelper');
 
 module.exports = {
@@ -29,16 +34,22 @@ module.exports = {
                 executor = entry.executor;
         } catch {}
 
-        const embed = new EmbedBuilder()
-            .setTitle('✏️ Salon Modifié')
-            .setColor('#FEE75C')
-            .addFields(
-                { name: '📌 Salon', value: `${newChannel}`, inline: true },
-                { name: '🛠️ Par', value: executor ? `${executor.tag}` : 'Inconnu', inline: true },
-                { name: '📝 Modifications', value: changes.join('\n'), inline: false }
+        const container = new ContainerBuilder().setAccentColor(0xFEE75C);
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent('## ✏️ Salon Modifié')
+        );
+        container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(
+                `**📌 Salon :** ${newChannel}\n` +
+                `**🛠️ Par :** ${executor ? executor.tag : 'Inconnu'}\n\n` +
+                `**📝 Modifications**\n${changes.join('\n')}`
             )
-            .setTimestamp();
+        );
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+        );
 
-        await sendLog(newChannel.guild, 'channels', embed);
+        await sendLog(newChannel.guild, 'channels', container);
     }
 };
