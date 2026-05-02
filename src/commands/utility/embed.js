@@ -1,7 +1,15 @@
-// src/commands/embed.js
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+    MessageFlags,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+    MediaGalleryBuilder,
+    MediaGalleryItemBuilder,
+} = require('discord.js');
 
-// Map pour suivre les commandes embed actives par utilisateur (tu peux l'externaliser dans un autre fichier si tu veux)
 const activeEmbeds = new Map();
 
 module.exports = {
@@ -12,26 +20,21 @@ module.exports = {
       return message.channel.send("Vous avez déjà une commande en cours. Veuillez la terminer ou attendre qu'elle expire.");
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle('Création d\'embed')
-      .setDescription('Cliquez sur un des boutons ci-dessous pour commencer.')
-      .setColor('#0099ff');
+    const panelContainer = new ContainerBuilder().setAccentColor(0x0099ff);
+    panelContainer.addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "## Création d'embed\nCliquez sur un des boutons ci-dessous pour commencer."
+      )
+    );
 
-    const row = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId('createEmbed')
-          .setLabel('Créer un embed')
-          .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-          .setCustomId('cancelEmbed')
-          .setLabel('Annuler')
-          .setStyle(ButtonStyle.Danger)
-      );
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId('createEmbed').setLabel('Créer un embed').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('cancelEmbed').setLabel('Annuler').setStyle(ButtonStyle.Danger)
+    );
 
     const embedMessage = await message.channel.send({
-      embeds: [embed],
-      components: [row]
+      components: [panelContainer, row],
+      flags: MessageFlags.IsComponentsV2
     });
 
     activeEmbeds.set(message.author.id, { message: embedMessage });
@@ -79,27 +82,41 @@ module.exports = {
           const addFooter = await askQuestion('Voulez-vous ajouter un footer ? (Oui / Non)');
           if (addFooter?.toLowerCase() === 'oui') {
             embedData.footer = await askQuestion('Veuillez entrer le texte du footer.');
-            const addFooterImage = await askQuestion('Voulez-vous ajouter une image pour le footer ? (Oui / Non)');
-            if (addFooterImage?.toLowerCase() === 'oui') {
-              embedData.footerImage = await askQuestion('Veuillez entrer l\'URL de l\'image du footer.');
-            }
           }
 
-          const finalEmbed = new EmbedBuilder()
-            .setTitle(embedData.title)
-            .setDescription(embedData.description)
-            .setColor(embedData.color || '#0099ff');
+          let hexColor = 0x0099ff;
+          if (embedData.color) {
+            const parsed = parseInt(embedData.color.replace('#', ''), 16);
+            if (!isNaN(parsed)) hexColor = parsed;
+          }
 
-          if (embedData.image) finalEmbed.setImage(embedData.image);
-          if (embedData.thumbnail) finalEmbed.setThumbnail(embedData.thumbnail);
+          const finalContainer = new ContainerBuilder().setAccentColor(hexColor);
+          if (embedData.title) {
+            finalContainer.addTextDisplayComponents(
+              new TextDisplayBuilder().setContent(`## ${embedData.title}`)
+            );
+          }
+          if (embedData.description || embedData.thumbnail) {
+            finalContainer.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+          }
+          if (embedData.description) {
+            finalContainer.addTextDisplayComponents(
+              new TextDisplayBuilder().setContent(embedData.description)
+            );
+          }
+          if (embedData.image) {
+            finalContainer.addMediaGalleryComponents(
+              new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(embedData.image))
+            );
+          }
           if (embedData.footer) {
-            finalEmbed.setFooter({
-              text: embedData.footer,
-              iconURL: embedData.footerImage || null
-            });
+            finalContainer.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            finalContainer.addTextDisplayComponents(
+              new TextDisplayBuilder().setContent(`-# ${embedData.footer}`)
+            );
           }
 
-          await message.channel.send({ embeds: [finalEmbed] });
+          await message.channel.send({ components: [finalContainer], flags: MessageFlags.IsComponentsV2 });
           await interaction.editReply({ content: 'Embed créé avec succès !', ephemeral: true });
 
         } catch (error) {
