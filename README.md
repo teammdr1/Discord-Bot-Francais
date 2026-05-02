@@ -47,8 +47,8 @@ Un bot Discord français ultra-complet avec modération avancée, économie, mus
 
 ```bash
 # Cloner le repo
-git clone https://github.com/votre-repo/noob-bot.git
-cd noob-bot
+git clone https://github.com/teammdr1/TheNetwork.git
+cd TheNetwork
 
 # Installer les dépendances
 npm install
