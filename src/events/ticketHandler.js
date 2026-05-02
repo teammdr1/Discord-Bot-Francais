@@ -1,10 +1,15 @@
 const {
-    EmbedBuilder,
+    MessageFlags,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     PermissionsBitField,
-    ChannelType
+    ChannelType,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+    SectionBuilder,
+    ThumbnailBuilder,
 } = require('discord.js');
 const guildConfig = require('../utils/guildConfig');
 const tickets = require('../utils/tickets');
@@ -21,18 +26,13 @@ function isStaff(member, cat) {
 }
 
 async function createTicketChannel(guild, member, category, ticketConfig) {
-    // Incrémenter le compteur
     const newCount = (ticketConfig.ticketCount || 0) + 1;
     guildConfig.setNested(guild.id, 'ticketConfig', 'ticketCount', newCount);
 
     const channelName = `ticket-${String(newCount).padStart(4, '0')}-${slugify(member.user.username)}`;
 
-    // Permissions du channel
     const permOverwrites = [
-        {
-            id: guild.roles.everyone.id,
-            deny: [PermissionsBitField.Flags.ViewChannel]
-        },
+        { id: guild.roles.everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
         {
             id: member.id,
             allow: [
@@ -53,7 +53,6 @@ async function createTicketChannel(guild, member, category, ticketConfig) {
         }
     ];
 
-    // Ajouter les rôles staff
     for (const roleId of category.staffRoles) {
         const role = guild.roles.cache.get(roleId);
         if (role) {
@@ -86,41 +85,43 @@ async function sendTicketEmbed(channel, member, category, number) {
         ? category.staffRoles.map(id => `<@&${id}>`).join(' ')
         : '';
 
-    const embed = new EmbedBuilder()
-        .setTitle(`🎫 Ticket #${String(number).padStart(4, '0')} — ${category.name}`)
-        .setDescription(
+    const container = new ContainerBuilder().setAccentColor(0x5865F2);
+
+    const section = new SectionBuilder();
+    section.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+            `## 🎫 Ticket #${String(number).padStart(4, '0')} — ${category.name}\n\n` +
             `Bonjour ${member} ! 👋\nMerci d'avoir ouvert un ticket **${category.emoji || '🎫'} ${category.name}**.\n\n` +
-            `Décrivez votre demande en détail et un membre du staff vous répondra dès que possible.\n\n` +
-            (staffMentions ? `Staff notifié : ${staffMentions}` : '')
+            `Décrivez votre demande en détail et un membre du staff vous répondra dès que possible.` +
+            (staffMentions ? `\n\nStaff notifié : ${staffMentions}` : '')
         )
-        .setColor('#5865F2')
-        .addFields(
-            { name: '👤 Créé par', value: `${member}`, inline: true },
-            { name: '📂 Catégorie', value: `${category.emoji || '🎫'} ${category.name}`, inline: true },
-            { name: '📅 Ouvert le', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+    );
+    section.setThumbnailAccessory(
+        new ThumbnailBuilder().setURL(member.user.displayAvatarURL({ dynamic: true }))
+    );
+    container.addSectionComponents(section);
+    container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+            `**👤 Créé par :** ${member}\n` +
+            `**📂 Catégorie :** ${category.emoji || '🎫'} ${category.name}\n` +
+            `**📅 Ouvert le :** <t:${Math.floor(Date.now() / 1000)}:F>`
         )
-        .setFooter({ text: `Ticket #${String(number).padStart(4, '0')}` })
-        .setTimestamp();
+    );
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`-# Ticket #${String(number).padStart(4, '0')}`)
+    );
 
     const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId('ticket_accept')
-            .setLabel('✅ Accepter')
-            .setStyle(ButtonStyle.Success),
-        new ButtonBuilder()
-            .setCustomId('ticket_refuse')
-            .setLabel('❌ Refuser')
-            .setStyle(ButtonStyle.Danger),
-        new ButtonBuilder()
-            .setCustomId('ticket_close')
-            .setLabel('🔒 Fermer')
-            .setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId('ticket_accept').setLabel('✅ Accepter').setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId('ticket_refuse').setLabel('❌ Refuser').setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId('ticket_close').setLabel('🔒 Fermer').setStyle(ButtonStyle.Secondary)
     );
 
     if (staffMentions) {
         await channel.send({ content: staffMentions, allowedMentions: { roles: category.staffRoles } });
     }
-    await channel.send({ embeds: [embed], components: [row] });
+    await channel.send({ components: [container, row], flags: MessageFlags.IsComponentsV2 });
 }
 
 async function logTicketAction(guild, cfg, action, member, category, channelName) {
@@ -129,20 +130,26 @@ async function logTicketAction(guild, cfg, action, member, category, channelName
     const logChannel = guild.channels.cache.get(logChannelId);
     if (!logChannel) return;
 
-    const colors = { open: '#5865F2', accept: '#57F287', refuse: '#ED4245', close: '#95A5A6' };
+    const colors = { open: 0x5865F2, accept: 0x57F287, refuse: 0xED4245, close: 0x95A5A6 };
     const labels = { open: '🎫 Ticket ouvert', accept: '✅ Ticket accepté', refuse: '❌ Ticket refusé', close: '🔒 Ticket fermé' };
 
-    const embed = new EmbedBuilder()
-        .setTitle(labels[action] || action)
-        .setColor(colors[action] || '#5865F2')
-        .addFields(
-            { name: '👤 Membre', value: `${member.user.tag} (${member.id})`, inline: true },
-            { name: '📂 Catégorie', value: category?.name || 'Inconnue', inline: true },
-            { name: '📋 Channel', value: channelName || 'N/A', inline: true }
+    const container = new ContainerBuilder().setAccentColor(colors[action] || 0x5865F2);
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`## ${labels[action] || action}`)
+    );
+    container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+            `**👤 Membre :** ${member.user.tag} (${member.id})\n` +
+            `**📂 Catégorie :** ${category?.name || 'Inconnue'}\n` +
+            `**📋 Channel :** ${channelName || 'N/A'}`
         )
-        .setTimestamp();
+    );
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+    );
 
-    logChannel.send({ embeds: [embed] }).catch(() => {});
+    logChannel.send({ components: [container], flags: MessageFlags.IsComponentsV2 }).catch(() => {});
 }
 
 // ===== GESTIONNAIRE =====
@@ -166,7 +173,6 @@ module.exports = {
 
             await interaction.deferReply({ ephemeral: true });
 
-            // Vérifier si l'utilisateur a déjà un ticket ouvert dans cette catégorie
             const all = tickets.getAll();
             const existing = Object.values(all).find(t =>
                 t.guildId === interaction.guild.id &&
@@ -268,13 +274,17 @@ module.exports = {
 
             tickets.update(interaction.channel.id, { status: 'accepted', acceptedBy: member.id });
 
-            const embed = new EmbedBuilder()
-                .setTitle('✅ Ticket accepté')
-                .setDescription(`Ce ticket a été **accepté** par ${member}.\nNous allons traiter votre demande rapidement.`)
-                .setColor('#57F287')
-                .setTimestamp();
+            const container = new ContainerBuilder().setAccentColor(0x57F287);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `## ✅ Ticket accepté\nCe ticket a été **accepté** par ${member}.\nNous allons traiter votre demande rapidement.`
+                )
+            );
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
 
-            await interaction.reply({ embeds: [embed] });
+            await interaction.reply({ components: [container], flags: MessageFlags.IsComponentsV2 });
             await logTicketAction(interaction.guild, cfg, 'accept', { user: interaction.user }, category, interaction.channel.name);
             return;
         }
@@ -291,13 +301,17 @@ module.exports = {
                 return interaction.reply({ content: '❌ Seul le staff peut refuser un ticket.', ephemeral: true });
             }
 
-            const embed = new EmbedBuilder()
-                .setTitle('❌ Ticket refusé')
-                .setDescription(`Ce ticket a été **refusé** par ${member}.\nLe salon sera supprimé dans 5 secondes.`)
-                .setColor('#ED4245')
-                .setTimestamp();
+            const container = new ContainerBuilder().setAccentColor(0xED4245);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `## ❌ Ticket refusé\nCe ticket a été **refusé** par ${member}.\nLe salon sera supprimé dans 5 secondes.`
+                )
+            );
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
 
-            await interaction.reply({ embeds: [embed] });
+            await interaction.reply({ components: [container], flags: MessageFlags.IsComponentsV2 });
             await logTicketAction(interaction.guild, cfg, 'refuse', { user: interaction.user }, category, interaction.channel.name);
             tickets.update(interaction.channel.id, { status: 'refused' });
 
@@ -323,13 +337,17 @@ module.exports = {
                 return interaction.reply({ content: '❌ Seul le créateur du ticket ou le staff peut le fermer.', ephemeral: true });
             }
 
-            const embed = new EmbedBuilder()
-                .setTitle('🔒 Ticket fermé')
-                .setDescription(`Ce ticket a été **fermé** par ${interaction.user}.\nLe salon sera supprimé dans 5 secondes.`)
-                .setColor('#95A5A6')
-                .setTimestamp();
+            const container = new ContainerBuilder().setAccentColor(0x95A5A6);
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
+                    `## 🔒 Ticket fermé\nCe ticket a été **fermé** par ${interaction.user}.\nLe salon sera supprimé dans 5 secondes.`
+                )
+            );
+            container.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+            );
 
-            await interaction.reply({ embeds: [embed] });
+            await interaction.reply({ components: [container], flags: MessageFlags.IsComponentsV2 });
             await logTicketAction(interaction.guild, cfg, 'close', { user: interaction.user }, category, interaction.channel.name);
             tickets.update(interaction.channel.id, { status: 'closed' });
 
