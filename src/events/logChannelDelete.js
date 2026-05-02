@@ -1,4 +1,9 @@
-const { EmbedBuilder, AuditLogEvent, ChannelType } = require('discord.js');
+const {
+    AuditLogEvent,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+} = require('discord.js');
 const { sendLog } = require('../utils/logHelper');
 
 const typeNames = { 0: 'Textuel', 2: 'Vocal', 4: 'Catégorie', 5: 'Annonce', 13: 'Stage', 15: 'Forum' };
@@ -15,17 +20,23 @@ module.exports = {
             if (entry && Date.now() - entry.createdTimestamp < 5000) executor = entry.executor;
         } catch {}
 
-        const embed = new EmbedBuilder()
-            .setTitle('📋 Salon Supprimé')
-            .setColor('#ED4245')
-            .addFields(
-                { name: '📌 Salon', value: `\`${channel.name}\``, inline: true },
-                { name: '📂 Type', value: typeNames[channel.type] || 'Inconnu', inline: true },
-                { name: '🛠️ Par', value: executor ? `${executor.tag}` : 'Inconnu', inline: true },
-                { name: '🆔 ID', value: `\`${channel.id}\``, inline: true }
+        const container = new ContainerBuilder().setAccentColor(0xED4245);
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent('## 📋 Salon Supprimé')
+        );
+        container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(
+                `**📌 Salon :** \`${channel.name}\`\n` +
+                `**📂 Type :** ${typeNames[channel.type] || 'Inconnu'}\n` +
+                `**🛠️ Par :** ${executor ? executor.tag : 'Inconnu'}\n` +
+                `**🆔 ID :** \`${channel.id}\``
             )
-            .setTimestamp();
+        );
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(`-# <t:${Math.floor(Date.now() / 1000)}:F>`)
+        );
 
-        await sendLog(channel.guild, 'channels', embed);
+        await sendLog(channel.guild, 'channels', container);
     }
 };
