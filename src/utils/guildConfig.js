@@ -13,7 +13,6 @@ function getDefault() {
   return {
     prefix: '+',
     welcomeChannelId: null,
-    welcomePingRoleId: null,
     logChannelId: null,
     soutienRoleId: null,
     soutienStatut: null,
@@ -23,18 +22,13 @@ function getDefault() {
     warnRoles: [],
     backupLink: null,
     serverDescription: null,
-    antiraidWhitelist: {
-      users: [],
-      roles: []
-    },
     antiraidConfig: {
       spamLimit: 5,
       spamInterval: 2000,
       muteDuration: 5,
       joinLimit: 10,
       joinInterval: 10000,
-      disableInvites: true,
-      raidRecovery: 10
+      disableInvites: true
     },
     ticketConfig: {
       panelDescription: 'Cliquez sur le bouton ci-dessous pour créer un ticket. Notre équipe vous répondra dans les meilleurs délais.',
@@ -42,7 +36,24 @@ function getDefault() {
       logChannelId: null,
       ticketCount: 0,
       categories: []
-    }
+    },
+    giveawayConfig: {
+      defaultColor: '#F1C40F',
+      defaultChannelId: null,
+      defaultWinners: 1,
+      managerRoles: []
+    },
+    logChannels: {
+      member: null,
+      messages: null,
+      voice: null,
+      roles: null,
+      boost: null,
+      channels: null,
+      moderation: null,
+      server: null
+    },
+    botOwners: []
   };
 }
 
@@ -56,9 +67,11 @@ function getAll(guildId) {
     return {
       ...defaults,
       ...saved,
-      antiraidWhitelist: { ...defaults.antiraidWhitelist, ...(saved.antiraidWhitelist || {}) },
       antiraidConfig: { ...defaults.antiraidConfig, ...(saved.antiraidConfig || {}) },
-      ticketConfig: { ...defaults.ticketConfig, ...(saved.ticketConfig || {}), categories: (saved.ticketConfig?.categories || []) }
+      ticketConfig: { ...defaults.ticketConfig, ...(saved.ticketConfig || {}), categories: (saved.ticketConfig?.categories || []) },
+      giveawayConfig: { ...defaults.giveawayConfig, ...(saved.giveawayConfig || {}) },
+      logChannels: { ...defaults.logChannels, ...(saved.logChannels || {}) },
+      botOwners: saved.botOwners || []
     };
   } catch {
     return getDefault();
@@ -91,4 +104,8 @@ function setNested(guildId, key, subKey, value) {
   fs.writeFileSync(path.join(GUILDS_DIR, `${guildId}.json`), JSON.stringify(config, null, 2));
 }
 
-module.exports = { get, set, setMany, setNested, getAll };
+function isBotOwner(guildId, userId) {
+  return (getAll(guildId).botOwners || []).includes(userId);
+}
+
+module.exports = { get, set, setMany, setNested, getAll, isBotOwner };
