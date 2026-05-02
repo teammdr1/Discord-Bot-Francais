@@ -10,7 +10,7 @@ const {
     ButtonStyle,
     StringSelectMenuBuilder,
 } = require('discord.js');
-const guildConfig = require('../utils/guildConfig');
+const guildConfig = require('../../utils/guildConfig');
 
 module.exports = {
     name: 'setup',
