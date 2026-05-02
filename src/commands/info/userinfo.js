@@ -12,10 +12,13 @@ const {
 module.exports = {
     name: 'userinfo',
     description: "Afficher les informations d'un utilisateur",
+
     async execute(client, message, args) {
         let user;
+
         if (args.length > 0) {
             const mention = message.mentions.users.first();
+
             if (mention) {
                 user = mention;
             } else {
@@ -29,26 +32,30 @@ module.exports = {
             user = message.author;
         }
 
-        // Fetch avec banner
-        const fetchedUser = await client.users.fetch(user.id, { force: true }).catch(() => user);
+        const fetchedUser = await client.users.fetch(user.id).catch(() => user);
         const member = await message.guild.members.fetch(user.id).catch(() => null);
 
-        const avatarURL = user.displayAvatarURL({ dynamic: true, size: 256 });
+        const avatarURL = user.displayAvatarURL({ size: 256 });
         const bannerURL = fetchedUser.bannerURL?.({ size: 1024 }) ?? null;
+
         const color = member?.displayColor || 0x5865F2;
 
+        // ✅ NO PING ROLES (JUST TEXT)
         const roles = member
             ? member.roles.cache
-                .filter(r => r.name !== '@everyone')
+                .filter(r => r.id !== message.guild.id)
                 .sort((a, b) => b.position - a.position)
-                .map(r => `<@&${r.id}>`)
-                .join(' ') || '*Aucun*'
-            : '*Non membre*';
-        const roleCount = member ? member.roles.cache.filter(r => r.name !== '@everyone').size : 0;
+                .map(r => r.name) // 🔥 FIX ICI
+                .join(', ') || 'Aucun'
+            : 'Non membre';
 
-        const container = new ContainerBuilder().setAccentColor(color || 0x5865F2);
+        const roleCount = member
+            ? member.roles.cache.filter(r => r.id !== message.guild.id).size
+            : 0;
 
-        // ── En-tête : nom + avatar ──
+        const container = new ContainerBuilder()
+            .setAccentColor(color);
+
         container.addSectionComponents(
             new SectionBuilder()
                 .addTextDisplayComponents(
@@ -63,29 +70,35 @@ module.exports = {
                 )
         );
 
-        container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+        container.addSeparatorComponents(
+            new SeparatorBuilder().setSpacing(1).setDivider(true)
+        );
 
-        // ── Dates ──
         container.addTextDisplayComponents(
             new TextDisplayBuilder().setContent(
                 `### 📅 Dates\n` +
-                `🔨 Compte créé : <t:${Math.floor(user.createdTimestamp / 1000)}:F> (<t:${Math.floor(user.createdTimestamp / 1000)}:R>)` +
-                (member ? `\n📥 A rejoint le serveur : <t:${Math.floor(member.joinedTimestamp / 1000)}:F> (<t:${Math.floor(member.joinedTimestamp / 1000)}:R>)` : '')
+                `🛠️ Créé : <t:${Math.floor(user.createdTimestamp / 1000)}:F>\n` +
+                (member
+                    ? `📥 Rejoint : <t:${Math.floor(member.joinedTimestamp / 1000)}:F>`
+                    : '')
             )
         );
 
-        container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+        container.addSeparatorComponents(
+            new SeparatorBuilder().setSpacing(1).setDivider(true)
+        );
 
-        // ── Rôles ──
         container.addTextDisplayComponents(
             new TextDisplayBuilder().setContent(
                 `### 🎖️ Rôles (${roleCount})\n${roles}`
             )
         );
 
-        // ── Bannière (si présente) ──
         if (bannerURL) {
-            container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1));
+            container.addSeparatorComponents(
+                new SeparatorBuilder().setSpacing(1)
+            );
+
             container.addMediaGalleryComponents(
                 new MediaGalleryBuilder().addItems(
                     new MediaGalleryItemBuilder()
@@ -95,11 +108,19 @@ module.exports = {
             );
         }
 
-        container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1));
-        container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`-# Demandé par ${message.author.tag}`)
+        container.addSeparatorComponents(
+            new SeparatorBuilder().setSpacing(1)
         );
 
-        await message.channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
+        container.addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(
+                `-# Demandé par ${message.author.tag}`
+            )
+        );
+
+        await message.channel.send({
+            components: [container],
+            flags: MessageFlags.IsComponentsV2
+        });
     }
 };
