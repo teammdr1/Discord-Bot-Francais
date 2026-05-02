@@ -1,6 +1,18 @@
 const fs = require('fs');
 const path = require('path');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+    MessageFlags,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+    SectionBuilder,
+    ThumbnailBuilder,
+    MediaGalleryBuilder,
+    MediaGalleryItemBuilder,
+} = require('discord.js');
 
 const GIVEAWAYS_FILE = path.join(__dirname, '../../data/giveaways.json');
 
@@ -97,7 +109,12 @@ function formatDuration(ms) {
     return parts.join(' ') || '0s';
 }
 
-// ───── EMBEDS ─────
+function hexToInt(hex) {
+    if (!hex) return 0xF1C40F;
+    return parseInt(hex.replace('#', ''), 16);
+}
+
+// ───── CONTAINERS CV2 ─────
 
 function buildGiveawayEmbed(giveaway) {
     const lines = [];
@@ -113,16 +130,31 @@ function buildGiveawayEmbed(giveaway) {
         lines.push(`🔔 **Notification :** ${n}`);
     }
 
-    const embed = new EmbedBuilder()
-        .setTitle(`🎉 ${giveaway.prize}`)
-        .setDescription(lines.join('\n'))
-        .setColor(giveaway.color || '#F1C40F')
-        .setFooter({ text: 'Se termine le' })
-        .setTimestamp(new Date(giveaway.endTime));
+    const container = new ContainerBuilder().setAccentColor(hexToInt(giveaway.color));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`## 🎉 ${giveaway.prize}`)
+    );
+    container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
 
-    if (giveaway.image) embed.setImage(giveaway.image);
-    if (giveaway.thumbnail) embed.setThumbnail(giveaway.thumbnail);
-    return embed;
+    if (giveaway.thumbnail) {
+        const section = new SectionBuilder();
+        section.addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')));
+        section.setThumbnailAccessory(new ThumbnailBuilder().setURL(giveaway.thumbnail));
+        container.addSectionComponents(section);
+    } else {
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')));
+    }
+
+    if (giveaway.image) {
+        container.addMediaGalleryComponents(
+            new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(giveaway.image))
+        );
+    }
+
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`-# Se termine le <t:${Math.floor(giveaway.endTime / 1000)}:F>`)
+    );
+    return container;
 }
 
 function buildEntryRow(giveaway, disabled = false) {
@@ -139,22 +171,34 @@ function buildWizardEmbed(draft) {
     const val = (v, fallback = '*Non défini*') => v != null ? String(v) : fallback;
     const check = (v) => v ? '✅' : '⬜';
 
-    return new EmbedBuilder()
-        .setTitle('🎉 Création d\'un Giveaway')
-        .setColor(draft.color || '#F1C40F')
-        .setDescription('Configurez votre giveaway via les boutons ci-dessous.\n`✅` = défini · `⬜` = optionnel · `❌` = manquant obligatoire')
-        .addFields(
-            { name: `🏆 Prix ${draft.prize ? '✅' : '❌'}`, value: val(draft.prize), inline: true },
-            { name: `⏱️ Durée ${draft.durationStr ? '✅' : '❌'}`, value: val(draft.durationStr), inline: true },
-            { name: `👥 Gagnants ✅`, value: `${draft.winners}`, inline: true },
-            { name: `📝 Description ${check(draft.description)}`, value: val(draft.description, '*Aucune*'), inline: true },
-            { name: `🎨 Couleur ✅`, value: `\`${draft.color}\``, inline: true },
-            { name: `🖼️ Image ${check(draft.image)}`, value: draft.image ? '✅ Définie' : '*Aucune*', inline: true },
-            { name: `🔔 Notification ${check(draft.notifStr)}`, value: val(draft.notifStr, '*Aucune*'), inline: true },
-            { name: `🔒 Condition ${check(draft.requiredRoleId)}`, value: draft.requiredRoleId ? `<@&${draft.requiredRoleId}>` : '*Aucune*', inline: true },
-            { name: `📡 Salon ${check(draft.channelId)}`, value: draft.channelId ? `<#${draft.channelId}>` : '*Salon actuel*', inline: true }
+    const container = new ContainerBuilder().setAccentColor(hexToInt(draft.color));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent('## 🎉 Création d\'un Giveaway')
+    );
+    container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+            'Configurez votre giveaway via les boutons ci-dessous.\n`✅` = défini · `⬜` = optionnel · `❌` = manquant obligatoire'
         )
-        .setFooter({ text: '⚠️ Prix et durée sont obligatoires pour lancer le giveaway.' });
+    );
+    container.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+            `**🏆 Prix ${draft.prize ? '✅' : '❌'}** — ${val(draft.prize)}\n` +
+            `**⏱️ Durée ${draft.durationStr ? '✅' : '❌'}** — ${val(draft.durationStr)}\n` +
+            `**👥 Gagnants ✅** — ${draft.winners}\n` +
+            `**📝 Description ${check(draft.description)}** — ${val(draft.description, '*Aucune*')}\n` +
+            `**🎨 Couleur ✅** — \`${draft.color}\`\n` +
+            `**🖼️ Image ${check(draft.image)}** — ${draft.image ? '✅ Définie' : '*Aucune*'}\n` +
+            `**🔔 Notification ${check(draft.notifStr)}** — ${val(draft.notifStr, '*Aucune*')}\n` +
+            `**🔒 Condition ${check(draft.requiredRoleId)}** — ${draft.requiredRoleId ? `<@&${draft.requiredRoleId}>` : '*Aucune*'}\n` +
+            `**📡 Salon ${check(draft.channelId)}** — ${draft.channelId ? `<#${draft.channelId}>` : '*Salon actuel*'}`
+        )
+    );
+    container.addTextDisplayComponents(
+        new TextDisplayBuilder().setContent('-# ⚠️ Prix et durée sont obligatoires pour lancer le giveaway.')
+    );
+    return container;
 }
 
 function buildWizardRows(draft) {
@@ -203,24 +247,34 @@ async function endGiveaway(giveaway, client) {
         update(giveaway.messageId, { ended: true, winnerIds: winners });
 
         if (msg) {
-            const embed = new EmbedBuilder()
-                .setTitle(`🎉 ${giveaway.prize} — Terminé !`)
-                .setColor('#95A5A6')
-                .setDescription(
+            const endContainer = new ContainerBuilder().setAccentColor(0x95A5A6);
+            endContainer.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`## 🎉 ${giveaway.prize} — Terminé !`)
+            );
+            endContainer.addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true));
+            endContainer.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(
                     (winners.length > 0
                         ? `🏆 **Gagnant(s) :** ${winners.map(id => `<@${id}>`).join(', ')}\n\n`
                         : `❌ **Aucun gagnant** (pas de participants valides)\n\n`) +
                     `🎟️ **Participants :** ${giveaway.entries.length}\n` +
                     `👤 **Organisé par :** <@${giveaway.hostId}>`
                 )
-                .setFooter({ text: 'Giveaway terminé' })
-                .setTimestamp();
-            if (giveaway.image) embed.setImage(giveaway.image);
+            );
+            if (giveaway.image) {
+                endContainer.addMediaGalleryComponents(
+                    new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(giveaway.image))
+                );
+            }
+            endContainer.addTextDisplayComponents(
+                new TextDisplayBuilder().setContent(`-# Giveaway terminé`)
+            );
             const row = new ActionRowBuilder().addComponents(
-                new ButtonBuilder().setCustomId('gw_enter').setLabel(`🎉 Terminé — ${giveaway.entries.length} participants`)
+                new ButtonBuilder().setCustomId('gw_enter')
+                    .setLabel(`🎉 Terminé — ${giveaway.entries.length} participants`)
                     .setStyle(ButtonStyle.Secondary).setDisabled(true)
             );
-            await msg.edit({ embeds: [embed], components: [row] }).catch(() => {});
+            await msg.edit({ components: [endContainer, row], flags: MessageFlags.IsComponentsV2 }).catch(() => {});
         }
 
         if (winners.length > 0) {
