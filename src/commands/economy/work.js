@@ -1,7 +1,17 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+  MessageFlags,
+  ContainerBuilder,
+  TextDisplayBuilder,
+  SeparatorBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder
+} = require('discord.js');
+
 const economy = require('../../utils/economy');
 
-const WORK_COOLDOWN = 60 * 60 * 1000; // 1 heure
+const WORK_COOLDOWN = 60 * 60 * 1000;
+
 const JOBS = [
   { name: "Développeur", min: 150, max: 350, emoji: "💻" },
   { name: "Livreur", min: 100, max: 250, emoji: "🚚" },
@@ -17,23 +27,29 @@ const JOBS = [
 
 module.exports = {
   name: 'work',
-  description: 'Travaille pour gagner de l\'argent.',
+
   async execute(client, message, args) {
     const userData = economy.getUserData(message.author.id);
+
     const now = Date.now();
     const remaining = WORK_COOLDOWN - (now - (userData.lastWork || 0));
 
     if (remaining > 0) {
-      const hours = Math.floor(remaining / (1000 * 60 * 60));
-      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const h = Math.floor(remaining / 3600000);
+      const m = Math.floor((remaining % 3600000) / 60000);
 
-      const embed = new EmbedBuilder()
-        .setColor('#ff0000')
-        .setTitle('⏰ Temps de repos nécessaire')
-        .setDescription(`Tu dois encore attendre **${hours}h ${minutes}min** avant de pouvoir retravailler.`)
-        .setFooter({ text: 'Utilise cette commande plus tard !' });
+      const container = new ContainerBuilder()
+        .setAccentColor(0xff0000)
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            `## ⏰ Travail impossible\nTu dois attendre **${h}h ${m}min**`
+          )
+        );
 
-      return message.channel.send({ embeds: [embed] });
+      return message.channel.send({
+        components: [container],
+        flags: MessageFlags.IsComponentsV2
+      });
     }
 
     const job = JOBS[Math.floor(Math.random() * JOBS.length)];
@@ -42,30 +58,34 @@ module.exports = {
     economy.addCash(message.author.id, amount);
     economy.updateStats(message.author.id, 'workCount', 1);
 
-    // Mettre à jour lastWork
-    const updatedUser = economy.getUserData(message.author.id);
-    updatedUser.lastWork = now;
-    economy.updateUser(message.author.id, updatedUser);
+    const updated = economy.getUserData(message.author.id);
+    updated.lastWork = now;
+    economy.updateUser(message.author.id, updated);
 
-    const embed = new EmbedBuilder()
-      .setColor('#00ff00')
-      .setTitle(`${job.emoji} Travail effectué !`)
-      .setDescription(`Tu as travaillé comme **${job.name}** et gagné **${amount.toLocaleString()} bobux** !`)
-      .addFields(
-        { name: '💼 Métier', value: job.name, inline: true },
-        { name: '💰 Gain', value: `${amount.toLocaleString()} bobux`, inline: true },
-        { name: '⏰ Prochain travail', value: 'Dans 1 heure', inline: true }
+    const container = new ContainerBuilder()
+      .setAccentColor(0x00ff00)
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          `## ${job.emoji} Travail terminé\n**${job.name}**\n+${amount.toLocaleString()} bobux`
+        )
       )
-      .setFooter({ text: `Total de travaux: ${economy.getUserStats(message.author.id).workCount}` });
+      .addSeparatorComponents(new SeparatorBuilder().setSpacing(1).setDivider(true))
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          `💼 Cooldown: 1h\n📊 Total travaux: ${economy.getUserStats(message.author.id).workCount}`
+        )
+      );
 
-    const row = new ActionRowBuilder().addComponents(
+    const buttons = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('work_again')
-        .setLabel('🔄 Travailler à nouveau')
+        .setLabel('🔄 Travailler')
         .setStyle(ButtonStyle.Primary)
-        .setDisabled(true)
     );
 
-    await message.channel.send({ embeds: [embed], components: [row] });
+    return message.channel.send({
+      components: [container, buttons],
+      flags: MessageFlags.IsComponentsV2
+    });
   }
 };
