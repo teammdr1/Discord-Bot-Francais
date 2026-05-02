@@ -15,6 +15,16 @@ const config = require("./config");
 const guildConfig = require("./src/utils/guildConfig");
 const snipe = require("./src/commands/other/snipe");
 const { Player } = require("discord-player");
+const { DefaultExtractors } = require("@discord-player/extractor");
+const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
+require("@discordjs/opus");
+
+process.env.FFMPEG_PATH = ffmpegInstaller.path || process.env.FFMPEG_PATH;
+
+// Ajout pour le serveur web
+const express = require('express');
+const session = require('express-session');
+const routes = require('./web/routes/index');
 
 const LOG_FILE = path.join(__dirname, "role_logs.txt");
 
@@ -36,7 +46,17 @@ const client = new Client({
   partials: [Partials.GuildMember],
 });
 
+
 client.player = new Player(client);
+
+client.once("ready", async () => {
+  try {
+    await client.player.extractors.loadMulti(DefaultExtractors);
+    console.log("🎵 Extracteurs chargés avec succès");
+  } catch (err) {
+    console.error("Extractors error:", err);
+  }
+});
 client.commands = new Collection();
 client.slashCommands = new Collection();
 client.prefix = config.prefix;
@@ -88,7 +108,7 @@ async function getBotAdder(guild, botId) {
   }
 }
 
-client.once("ready", async () => {
+async function onClientReady() {
   client.guilds.cache.forEach(async (guild) => {
     try {
       const invites = await guild.invites.fetch();
@@ -98,10 +118,19 @@ client.once("ready", async () => {
       invitesCache.set(guild.id, new Map());
     }
   });
-});
+}
+
+client.once("clientReady", onClientReady);
 
 client.player.events.on("playerStart", (queue, track) => {
-  queue.metadata.channel.send(`▶️ ${track.title}`);
+  const channel = queue.metadata?.channel || queue.metadata?.textChannel;
+  if (channel?.send) channel.send(`▶️ ${track.title}`);
+});
+
+client.player.events.on("playerError", (queue, error) => {
+  const channel = queue?.metadata?.channel || queue?.metadata?.textChannel;
+  console.error("Erreur audio du player :", error);
+  if (channel?.send) channel.send("❌ Erreur de lecture audio. Vérifie ta commande et réessaie.");
 });
 
 client.on("presenceUpdate", async (_, newPresence) => {
@@ -276,6 +305,27 @@ process.on("SIGINT", () => {
 process.on("SIGTERM", () => {
   client.destroy();
   process.exit(0);
+});
+
+// Démarrage du serveur web
+const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'web/views'));
+app.use(express.static(path.join(__dirname, 'web/public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: 'your-secret-key', // À changer pour un vrai secret
+  resave: false,
+  saveUninitialized: true
+}));
+app.use('/', routes);
+
+// Rendre le client accessible globalement pour les routes
+global.client = client;
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur web démarré sur le port ${PORT}`);
 });
 
 client.login(config.token);
