@@ -115,7 +115,6 @@ Le bot sera en ligne !
 ```bash
 DISCORD_TOKEN=votre_token
 OWNER_ID=votre_id
-PORT=3000
 ```
 
 ---
